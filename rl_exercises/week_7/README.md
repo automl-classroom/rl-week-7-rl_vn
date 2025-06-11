@@ -26,6 +26,7 @@ You can also look at papers to find established ideas.
 Use your method to generate **behavior snapshots** that let you reason about exploration behavior at a minimum of three points during training and upload these. Note down your thoughts in a **.txt file**.
 
 ## Level 3: Ensemble-Based Exploration
+
 As this week's stretch task, take a look at a different form of exploration: using a DQN ensemble. 
 Follow this paper and implement its method: https://arxiv.org/pdf/2306.05483
 What effect do you see compared to RND?

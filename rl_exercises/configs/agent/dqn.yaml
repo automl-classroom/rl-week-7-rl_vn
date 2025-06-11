@@ -1,8 +1,8 @@
 # @package _global_
 env:
-  name: CartPole-v1
+  name: LunarLander-v3
 
-seed: 0
+seed: 2
 
 agent:
   buffer_capacity:    10000    # max replay buffer size
@@ -13,7 +13,12 @@ agent:
   epsilon_final:      0.01
   epsilon_decay:      500
   target_update_freq: 1000
+  rnd_hidden_size: 128
+  rnd_lr: 0.001
+  rnd_update_freq: 10
+  rnd_n_layers: 2
+  rnd_reward_weight: 0.01
 
 train:
-  num_frames:     20000   # total env steps
+  num_frames:     800000   # total env steps
   eval_interval:  1000    # print avg reward every this many episodes

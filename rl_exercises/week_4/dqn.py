@@ -250,7 +250,9 @@ class DQNAgent(AbstractAgent):
         self.total_steps += 1
         return float(loss.item())
 
-    def train(self, num_frames: int, eval_interval: int = 1000) -> None:
+    def train(
+        self, num_frames: int, eval_interval: int = 1000
+    ) -> Tuple[List[int], List[float], List[float]]:
         """
         Run a training loop for a fixed number of frames.
 
@@ -264,6 +266,11 @@ class DQNAgent(AbstractAgent):
         state, _ = self.env.reset()
         ep_reward = 0.0
         recent_rewards: List[float] = []
+
+        # create lists of average rewards and frames
+        frames: List[int] = []
+        average_returns: List[float] = []
+        std_returns: List[float] = []
 
         for frame in range(1, num_frames + 1):
             action = self.predict_action(state)
@@ -286,11 +293,15 @@ class DQNAgent(AbstractAgent):
                 # logging
                 if len(recent_rewards) % 10 == 0:
                     avg = np.mean(recent_rewards[-10:])
+                    std = np.std(recent_rewards[-10:])
+                    frames.append(frame)
+                    average_returns.append(avg)
+                    std_returns.append(std)
                     print(
-                        f"Frame {frame}, AvgReward(10): {avg:.2f}, ε={self.epsilon():.3f}"
+                        f"Frame {frame}, AvgRewardEpsilon(10): {avg:6.1f} ± {std:4.1f} ε={self.epsilon():.3f}"
                     )
 
-        print("Training complete.")
+        return frames, average_returns, std_returns
 
 
 @hydra.main(config_path="../configs/agent/", config_name="dqn", version_base="1.1")
