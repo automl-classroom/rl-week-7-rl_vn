@@ -12,7 +12,7 @@ from scipy.interpolate import interp1d
 results_dir = os.path.join(os.path.dirname(__file__), "results")
 
 # Number of seeds
-n_seeds = 3
+n_seeds = 5
 
 # Algorithms to compare
 algorithms = ["DQN", "RND_DQN"]
@@ -21,23 +21,35 @@ algorithms = ["DQN", "RND_DQN"]
 df_dqn_s0 = pd.read_csv(os.path.join(results_dir, "dqn_training_data_seed_0.csv"))
 df_dqn_s1 = pd.read_csv(os.path.join(results_dir, "dqn_training_data_seed_1.csv"))
 df_dqn_s2 = pd.read_csv(os.path.join(results_dir, "dqn_training_data_seed_2.csv"))
+df_dqn_s3 = pd.read_csv(os.path.join(results_dir, "dqn_training_data_seed_3.csv"))
+df_dqn_s4 = pd.read_csv(os.path.join(results_dir, "dqn_training_data_seed_4.csv"))
 
 # Load RND_DQN data
 df_rnd_s0 = pd.read_csv(os.path.join(results_dir, "rnd_dqn_training_data_seed_0.csv"))
 df_rnd_s1 = pd.read_csv(os.path.join(results_dir, "rnd_dqn_training_data_seed_1.csv"))
 df_rnd_s2 = pd.read_csv(os.path.join(results_dir, "rnd_dqn_training_data_seed_2.csv"))
+df_rnd_s3 = pd.read_csv(os.path.join(results_dir, "rnd_dqn_training_data_seed_3.csv"))
+df_rnd_s4 = pd.read_csv(os.path.join(results_dir, "rnd_dqn_training_data_seed_4.csv"))
 
 # Add seed identifiers
 df_dqn_s0["seed"] = 0
 df_dqn_s1["seed"] = 1
 df_dqn_s2["seed"] = 2
+df_dqn_s3["seed"] = 3
+df_dqn_s4["seed"] = 4
 df_rnd_s0["seed"] = 0
 df_rnd_s1["seed"] = 1
 df_rnd_s2["seed"] = 2
+df_rnd_s3["seed"] = 3
+df_rnd_s4["seed"] = 4
 
 # Combine dataframes
-df_dqn = pd.concat([df_dqn_s0, df_dqn_s1, df_dqn_s2], ignore_index=True)
-df_rnd = pd.concat([df_rnd_s0, df_rnd_s1, df_rnd_s2], ignore_index=True)
+df_dqn = pd.concat(
+    [df_dqn_s0, df_dqn_s1, df_dqn_s2, df_dqn_s3, df_dqn_s4], ignore_index=True
+)
+df_rnd = pd.concat(
+    [df_rnd_s0, df_rnd_s1, df_rnd_s2, df_rnd_s3, df_rnd_s4], ignore_index=True
+)
 
 # Get a common set of frames (use seed 0's frames as reference)
 frames_dqn = df_dqn_s0["frames_Epsilon"].to_numpy()
@@ -74,10 +86,16 @@ for seed in range(n_seeds):
 # Combine into a dictionary for rliable
 train_scores = {"DQN": dqn_rewards, "RND_DQN": rnd_rewards}
 
+
 # Define IQM metric
-iqm = lambda scores: np.array(
-    [metrics.aggregate_iqm(scores[:, eval_idx]) for eval_idx in range(scores.shape[-1])]
-)
+def iqm(scores):
+    return np.array(
+        [
+            metrics.aggregate_iqm(scores[:, eval_idx])
+            for eval_idx in range(scores.shape[-1])
+        ]
+    )
+
 
 # Compute IQM and confidence intervals
 iqm_scores, iqm_cis = rly.get_interval_estimates(
